@@ -1,6 +1,7 @@
+using Unity.Netcode;
 using UnityEngine;
 
-public class PlayerMovement : MonoBehaviour
+public class PlayerMovement : NetworkBehaviour
 {
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     public float speed = 5f; 
@@ -13,6 +14,7 @@ public class PlayerMovement : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if(!IsLocalPlayer) return;
         float moveX = Input.GetAxis("Horizontal");
         float moveZ = Input.GetAxis("Vertical");
 
@@ -30,5 +32,16 @@ public class PlayerMovement : MonoBehaviour
         {
             transform.forward = new Vector3(moveX, 0, moveZ);
         }
+        
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            JumpServerRpc(); // Вызываем действие через сервер
+        }
+    }
+
+    [ServerRpc]
+    void JumpServerRpc()
+    {
+        Debug.Log("Игрок прыгнул!");
     }
 }
